@@ -1,0 +1,13 @@
+bool func()
+{
+	count();
+}
+
+double count()
+{
+	double rez;
+	rez = 5 / 4 * 0.2 + 9;
+	double rez_du;
+	rez_du = rez / 5 * 8;
+	return rez_du;
+}
