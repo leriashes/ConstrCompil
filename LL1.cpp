@@ -50,6 +50,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_A:
 				// A -> T A1 | I
+				// A -> T sem_startDeclare A1 | I
 				if (t == TClass)
 				{
 					m[z++] = neterm_I;
@@ -57,6 +58,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				else
 				{
 					m[z++] = neterm_A1;
+					m[z++] = sem_startDeclare;
 					m[z++] = neterm_T;
 				}
 				break;
@@ -92,12 +94,14 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_T:
 				// T -> bool | double | a
+				// T -> bool | double | a sem_getType
 				if (t == TBool || t == TDouble)
 				{
 					m[z++] = t;
 				}
 				else
 				{
+					m[z++] = TTochkaZap;
 					m[z++] = TIdent;
 				}
 				break;
@@ -126,23 +130,28 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_L:
 				// L -> = Q | eps
+				// L -> sem_setIdent = Q sem_match | sem_setIdent
 				if (t == TSave)
 				{
+					m[z++] = sem_match;
 					m[z++] = neterm_Q;
 					m[z++] = TSave;
+					m[z++] = sem_setIdent;
 				}
 				else
 				{
-					epsilon();
+					m[z++] = sem_setIdent;
 				}
 				break;
 
 			case neterm_I: 
-				// I -> class a { G } ;
+				// I -> class a sem_setClass { G } sem_returnLevel ;
 				m[z++] = TTochkaZap;
+				m[z++] = sem_returnLevel;
 				m[z++] = TFRS;
 				m[z++] = neterm_G;
 				m[z++] = TFLS;
+				m[z++] = sem_setClass;
 				m[z++] = TIdent;
 				m[z++] = TClass;
 				break;
