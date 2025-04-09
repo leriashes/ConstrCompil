@@ -22,6 +22,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				}
 				else
 				{
+					tran->SaveLex(l);
 					t = scan->FScaner(l);
 				}
 			}
@@ -94,14 +95,14 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_T:
 				// T -> bool | double | a
-				// T -> bool | double | a sem_getType
+				// T -> bool | double | a sem_findClass
 				if (t == TBool || t == TDouble)
 				{
 					m[z++] = t;
 				}
 				else
 				{
-					m[z++] = TTochkaZap;
+					m[z++] = sem_findClass;
 					m[z++] = TIdent;
 				}
 				break;
@@ -171,21 +172,28 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_F:
 				// F -> N1 ( ) K
+				// F -> N1 sem_setFunct ( ) K sem_returnLevel
+				m[z++] = sem_returnLevel;
 				m[z++] = neterm_K;
 				m[z++] = TRS;
 				m[z++] = TLS;
+				m[z++] = sem_setFunct;
 				m[z++] = neterm_N1;
 				break;
 
 			case neterm_K:
 				// K -> { J }
+				// K -> { sem_setNewLevel J } sem_returnLevel
+				m[z++] = sem_returnLevel;
 				m[z++] = TFRS;
 				m[z++] = neterm_J;
+				m[z++] = sem_setNewLevel;
 				m[z++] = TFLS;
 				break;
 
 			case neterm_J:
 				// J -> T D J | I J | M J | eps
+				// J -> T sem_startDeclare D J | I J | M J | eps
 				if (t == TClass)
 				{
 					m[z++] = neterm_J;
@@ -201,6 +209,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 					{
 						m[z++] = neterm_J;
 						m[z++] = neterm_D;
+						m[z++] = sem_startDeclare;
 						m[z++] = neterm_T;
 					}
 					else
@@ -213,6 +222,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				{
 					m[z++] = neterm_J;
 					m[z++] = neterm_D;
+					m[z++] = sem_startDeclare;
 					m[z++] = neterm_T;
 				}
 				else if (t == TFRS)
@@ -228,10 +238,12 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_M:
 				// M -> B O ; | K | M1 | ; | H ; | main ( ) ;
+				// M -> B sem_findVar O ; | K | M1 | ; | H ; | main sem_findFunct ( ) ;
 				if (t == TIdent)
 				{
 					m[z++] = TTochkaZap;
 					m[z++] = neterm_O;
+					m[z++] = sem_findVar;
 					m[z++] = neterm_B;
 				}
 				else if (t == TMain)
@@ -239,6 +251,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = TTochkaZap;
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_findFunct;
 					m[z++] = TMain;
 				}
 				else if (t == TFLS)
@@ -272,6 +285,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_H:
 				// H -> return Q
+				// H -> return Q sem_match
+				m[z++] = sem_match;
 				m[z++] = neterm_Q;
 				m[z++] = TReturn;
 				break;
@@ -291,8 +306,10 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_O:
 				// O -> = Q | ( )
+				// O -> = Q sem_match | ( )
 				if (t == TSave)
 				{
+					m[z++] = sem_match;
 					m[z++] = neterm_Q;
 					m[z++] = TSave;
 				}
@@ -323,9 +340,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_Q1:
 				// Q1 -> \ R Q1 | eps
+				// Q1 -> \ R sem_match Q1 | eps
 				if (t == TOR)
 				{
 					m[z++] = neterm_Q1;
+					m[z++] = sem_match;
 					m[z++] = neterm_R;
 					m[z++] = TOR;
 				}
@@ -343,9 +362,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_R1:
 				// R1 -> ^ U R1 | eps
+				// R1 -> ^ U sem_match R1 | eps
 				if (t == TOR)
 				{
 					m[z++] = neterm_R1;
+					m[z++] = sem_match;
 					m[z++] = neterm_U;
 					m[z++] = TXOR;
 				}
@@ -363,9 +384,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_U1:
 				// U1 -> & V U1 | eps
+				// U1 -> & V sem_match U1 | eps
 				if (t == TAnd)
 				{
 					m[z++] = neterm_U1;
+					m[z++] = sem_match;
 					m[z++] = neterm_V;
 					m[z++] = TAnd;
 				}
@@ -383,9 +406,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_V1:
 				// V1 -> == W V1 | != W V1 | eps
+				// V1 -> == W sem_match V1 | != W sem_match V1 | eps
 				if (t == TEQ || t == TNEQ)
 				{
 					m[z++] = neterm_V1;
+					m[z++] = sem_match;
 					m[z++] = neterm_W;
 					m[z++] = t;
 				}
@@ -403,9 +428,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_W1:
 				// W1 -> < X W1 | <= X W1 | > X W1 | >= X W1 | eps
+				// W1 -> < X sem_match W1 | <= X sem_match W1 | > X sem_match W1 | >= X sem_match W1 | eps
 				if (t >= TLT && t <= TGE)
 				{
 					m[z++] = neterm_W1;
+					m[z++] = sem_match;
 					m[z++] = neterm_X;
 					m[z++] = t;
 				}
@@ -423,9 +450,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_X1:
 				// X1 -> + Y X1 | - Y X1 | eps
+				// X1 -> + Y sem_match X1 | - Y sem_match X1 | eps
 				if (t == TPlus || t == TMinus)
 				{
 					m[z++] = neterm_X1;
+					m[z++] = sem_match;
 					m[z++] = neterm_Y;
 					m[z++] = t;
 				}
@@ -443,9 +472,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_Y1:
 				// Y1 -> * Z Y1 | / Z Y1 | % Z Y1 | eps
+				// Y1 -> * Z sem_match Y1 | / Z sem_match Y1 | % Z sem_match Y1 | eps
 				if (t == TMult || t == TDiv || t == TMod)
 				{
 					m[z++] = neterm_Y1;
+					m[z++] = sem_match;
 					m[z++] = neterm_Z;
 					m[z++] = t;
 				}
@@ -467,6 +498,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_Z1:
 				// Z1 -> B P | C | main ( ) | ( Q )
+				// Z1 -> B P | C | main sem_findFunct ( ) | ( Q )
 				if (t == TIdent)
 				{
 					m[z++] = neterm_P;
@@ -476,6 +508,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				{
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_findFunct;
 					m[z++] = TMain;
 				}
 				else if (t == TLS)
@@ -492,14 +525,16 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_P:
 				// P -> ( ) | eps
+				// P -> sem_findFunct ( ) | sem_findVar
 				if (t == TLS)
 				{
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_findFunct;
 				}
 				else
 				{
-					epsilon();
+					m[z++] = sem_findVar;
 				}
 				break;
 
@@ -511,11 +546,13 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_B1:
 				// B1 -> . a B1 | eps
+				// B1 -> sem_findVar . a B1 | eps
 				if (t == TTochka)
 				{
 					m[z++] = neterm_B1;
 					m[z++] = TIdent;
 					m[z++] = TTochka;
+					m[z++] = sem_findVar;
 				}
 				else
 				{
@@ -534,6 +571,46 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = TConstFloat;
 				}
 				break;
+
+			case sem_startDeclare:
+				tran->deltaStartDeclare(m[z + 1]);
+				break;
+
+			case sem_setIdent:
+				tran->deltaSetIdent();
+				break;
+
+			case sem_findVar:
+				tran->deltaFindVar();
+				break;
+
+			case sem_match:
+				break;
+
+			case sem_setFunct:
+				tran->deltaSetFunct();
+				break;
+
+			case sem_returnLevel:
+				tran->deltaReturnLevel();
+				break;
+
+			case sem_setNewLevel:
+				tran->deltaSetNewLevel();
+				break;
+
+			case sem_setClass:
+				tran->deltaSetClass();
+				break;
+
+			case sem_findFunct:
+				tran->deltaFindFunct();
+				break;
+
+			case sem_findClass:
+				tran->deltaFindClass();
+				break;
+
 			}
 		}
 
@@ -543,10 +620,22 @@ int LL1::LL_1() //функция синтаксического анализатора
 	return 1;
 }
 
+void LL1::PrintTree()
+{
+	tran->PrintTree();
+}
+
 LL1::LL1(Scaner* scan)
 {
 	this->scan = scan;
 	z = 0;
+	this->tran = new Translate(scan);
+}
+
+LL1::~LL1()
+{
+	tran->CleanTree();
+	delete tran;
 }
 
 void LL1::epsilon()	//обработка правила с пустой правой частью

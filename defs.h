@@ -109,9 +109,11 @@ typedef char LEX[MAX_LEX];   //лексема
 //операционные символы (семантика)
 #define sem_startDeclare		1100 //sem1
 #define sem_setIdent			1101 //sem2
-#define sem_find				1102 //sem3
+#define sem_findVar				1102 //sem3
 #define sem_match				1103 //sem4
 #define sem_setFunct			1104 //sem5
 #define sem_returnLevel			1105 //sem6
 #define sem_setNewLevel			1106 //sem7
 #define sem_setClass			1107 //sem8
+#define sem_findFunct			1108 //sem9
+#define sem_findClass			1109 //sem10

@@ -27,6 +27,9 @@ int main()
         printf("\n\nОшибки не найдены.\n\n");
     }
 
+    printf("\n\n\nСЕМАНТИЧЕСКОЕ ДЕРЕВО\n\n");
+    ll.PrintTree();
+
     delete scan;
 
     return 0;

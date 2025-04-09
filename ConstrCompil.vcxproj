@@ -130,11 +130,15 @@
     <ClCompile Include="ConstrCompil.cpp" />
     <ClCompile Include="LL1.cpp" />
     <ClCompile Include="Scaner.cpp" />
+    <ClCompile Include="Semantika.cpp" />
+    <ClCompile Include="Translate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defs.h" />
     <ClInclude Include="LL1.h" />
     <ClInclude Include="Scaner.h" />
+    <ClInclude Include="Semantika.h" />
+    <ClInclude Include="Translate.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
