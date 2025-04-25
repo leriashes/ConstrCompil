@@ -1,11 +1,24 @@
 #pragma once
 #include "Semantika.h"
+#include <deque>
+#include "Scaner.h"
+#include "Triada.h"
+
+#define MAXCODE 1000
 
 struct GlobalData
 {
 	LEX prevLex;
 	LEX className;
 	DATA_TYPE dataType;
+
+	int k;
+	deque<DATA_TYPE> t;
+	Triada code[MAXCODE];
+	deque<Operand> res;
+	deque<int> addr;
+
+	deque<int> operation;
 };
 
 class Translate
@@ -14,7 +27,7 @@ class Translate
 	GlobalData* global;
 
 public:
-	Translate(Scaner* scan);
+	Translate(Tree* root, GlobalData* global);
 	~Translate();
 	void PrintTree();
 	void CleanTree();
@@ -30,4 +43,5 @@ public:
 	void deltaSetClass();
 	void deltaFindFunct();
 	void deltaFindClass();
+	void deltaConstType(int constTerm);
 };

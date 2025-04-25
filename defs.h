@@ -106,14 +106,51 @@ typedef char LEX[MAX_LEX];   //лексема
 #define neterm_B1	1037
 #define neterm_C	1038
 
+#define MaxTypeNeterminal		neterm_C
+
 //операционные символы (семантика)
-#define sem_startDeclare		1100 //sem1
-#define sem_setIdent			1101 //sem2
-#define sem_findVar				1102 //sem3
-#define sem_match				1103 //sem4
-#define sem_setFunct			1104 //sem5
-#define sem_returnLevel			1105 //sem6
-#define sem_setNewLevel			1106 //sem7
-#define sem_setClass			1107 //sem8
-#define sem_findFunct			1108 //sem9
-#define sem_findClass			1109 //sem10
+#define sem_startDeclare		1100
+#define sem_setIdent			1101
+#define sem_findVar				1102
+#define sem_setFunct			1103
+#define sem_returnLevel			1104
+#define sem_setNewLevel			1105
+#define sem_setClass			1106
+#define sem_findFunct			1107
+#define sem_findClass			1108
+#define sem_constType			1109
+
+#define sem_match				1110
+#define sem_matchLeft			1111
+#define sem_matchBool			1112
+#define sem_push				1113
+#define sem_gener				1114	
+#define sem_generIf				1115
+#define sem_formIf				1116
+#define sem_generGoto			1117
+#define sem_formGoto			1118
+#define sem_generNop			1119
+#define sem_setAddr				1120
+#define sem_generCall			1121
+#define sem_startFunc			1122
+#define sem_endFunc				1123
+#define sem_generReturn			1124
+#define sem_generUnar			1125
+
+#define MaxTypeSem				sem_generUnar
+
+#define ifOper					1200
+
+#define boolToDouble			1210
+#define doubleToBool			1211
+
+#define callOper				1220
+#define returnOper				1221
+#define gotoOper				1222
+#define procOper				1223
+
+#define prologOper				1230
+#define epilogOper				1231
+#define retOper					1232
+#define endpOper				1233
+#define nopOper					1234

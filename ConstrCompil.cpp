@@ -30,7 +30,7 @@ int main()
     printf("\n\n\nСЕМАНТИЧЕСКОЕ ДЕРЕВО\n\n");
     ll.PrintTree();
 
-    delete scan;
+    ll.PrintTriada();
 
     return 0;
 }
