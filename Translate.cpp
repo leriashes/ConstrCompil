@@ -1,9 +1,9 @@
 #include "Translate.h"
 
-Translate::Translate(Scaner* scan)
+Translate::Translate(Tree* root, GlobalData* global)
 {
-	this->root = new Tree(scan);
-	this->global = new GlobalData();
+	this->root = root;
+	this->global = global;
 }
 
 Translate::~Translate()
@@ -85,4 +85,12 @@ void Translate::deltaFindClass()
 {
 	root->SemGetClass(global->prevLex);
 	memcpy(global->className, global->prevLex, strlen(global->prevLex) + 1);
+}
+
+void Translate::deltaConstType(int constTerm)
+{
+	if (constTerm == TConstInt || constTerm == TTrue || constTerm == TFalse)
+		global->dataType = TYPE_BOOL;
+	else
+		global->dataType = TYPE_DOUBLE;
 }

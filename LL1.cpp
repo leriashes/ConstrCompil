@@ -25,6 +25,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 					tran->SaveLex(l);
 					t = scan->FScaner(l);
 				}
+
+				if (t >= TOR && t <= TMod)
+				{
+					genIL->saveOperator(t);
+				}
 			}
 			else
 			{
@@ -32,7 +37,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				return -1;
 			}
 		}
-		else	//в верхушке магазина нетерминал
+		else if (m[z] <= MaxTypeNeterminal)	//в верхушке магазина нетерминал
 		{
 			switch (m[z])
 			{
@@ -131,12 +136,15 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_L:
 				// L -> = Q | eps
-				// L -> sem_setIdent = Q sem_match | sem_setIdent
+				// L -> sem_setIdent = Q | sem_setIdent
+				// L -> sem_setIdent push = Q matchLeft gener | sem_setIdent
 				if (t == TSave)
 				{
-					m[z++] = sem_match;
+					m[z++] = sem_gener;
+					m[z++] = sem_matchLeft;
 					m[z++] = neterm_Q;
 					m[z++] = TSave;
+					m[z++] = sem_push;
 					m[z++] = sem_setIdent;
 				}
 				else
@@ -145,7 +153,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 				}
 				break;
 
-			case neterm_I: 
+			case neterm_I:
+				// I -> class a { G } ;
 				// I -> class a sem_setClass { G } sem_returnLevel ;
 				m[z++] = TTochkaZap;
 				m[z++] = sem_returnLevel;
@@ -173,10 +182,14 @@ int LL1::LL_1() //функция синтаксического анализатора
 			case neterm_F:
 				// F -> N1 ( ) K
 				// F -> N1 sem_setFunct ( ) K sem_returnLevel
+				// F -> N1 sem_setFunct push ( ) startFunc K endFunc sem_returnLevel
 				m[z++] = sem_returnLevel;
+				m[z++] = sem_endFunc;
 				m[z++] = neterm_K;
+				m[z++] = sem_startFunc;
 				m[z++] = TRS;
 				m[z++] = TLS;
+				m[z++] = sem_push;
 				m[z++] = sem_setFunct;
 				m[z++] = neterm_N1;
 				break;
@@ -238,19 +251,21 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_M:
 				// M -> B O ; | K | M1 | ; | H ; | main ( ) ;
-				// M -> B sem_findVar O ; | K | M1 | ; | H ; | main sem_findFunct ( ) ;
+				// M -> B O ; | K | M1 | ; | H ; | main sem_findFunct ( ) ;
+				// M -> B O ; | K | M1 | ; | H ; | main sem_findFunct push ( ) generCall ;
 				if (t == TIdent)
 				{
 					m[z++] = TTochkaZap;
 					m[z++] = neterm_O;
-					m[z++] = sem_findVar;
 					m[z++] = neterm_B;
 				}
 				else if (t == TMain)
 				{
 					m[z++] = TTochkaZap;
+					m[z++] = sem_generCall;
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_push;
 					m[z++] = sem_findFunct;
 					m[z++] = TMain;
 				}
@@ -275,8 +290,16 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_M1:
 				// M1 -> if ( Q ) M N
+				// M1 -> if ( Q ) generIf setAddr M formIf generGoto setAddr N formGoto generNop
+				m[z++] = sem_generNop;
+				m[z++] = sem_formGoto;
 				m[z++] = neterm_N;
+				m[z++] = sem_setAddr;
+				m[z++] = sem_generGoto;
+				m[z++] = sem_formIf;
 				m[z++] = neterm_M;
+				m[z++] = sem_setAddr;
+				m[z++] = sem_generIf;
 				m[z++] = TRS;
 				m[z++] = neterm_Q;
 				m[z++] = TLS;
@@ -285,8 +308,9 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_H:
 				// H -> return Q
-				// H -> return Q sem_match
-				m[z++] = sem_match;
+				// H -> return Q matchLeft generReturn
+				m[z++] = sem_generReturn;
+				m[z++] = sem_matchLeft;
 				m[z++] = neterm_Q;
 				m[z++] = TReturn;
 				break;
@@ -306,17 +330,24 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_O:
 				// O -> = Q | ( )
-				// O -> = Q sem_match | ( )
+				// O -> sem_findVar = Q | sem_findFunct ( )
+				// O -> sem_findVar push = Q sem_matchLeft gener | sem_findFunct push ( ) generCall
 				if (t == TSave)
 				{
-					m[z++] = sem_match;
+					m[z++] = sem_gener;
+					m[z++] = sem_matchLeft;
 					m[z++] = neterm_Q;
 					m[z++] = TSave;
+					m[z++] = sem_push;
+					m[z++] = sem_findVar;
 				}
 				else
 				{
+					m[z++] = sem_generCall;
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_push;
+					m[z++] = sem_findFunct;
 				}
 				break;
 
@@ -340,11 +371,12 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_Q1:
 				// Q1 -> \ R Q1 | eps
-				// Q1 -> \ R sem_match Q1 | eps
+				// Q1 -> \ R sem_matchBool gener Q1 | eps
 				if (t == TOR)
 				{
 					m[z++] = neterm_Q1;
-					m[z++] = sem_match;
+					m[z++] = sem_gener;
+					m[z++] = sem_matchBool;
 					m[z++] = neterm_R;
 					m[z++] = TOR;
 				}
@@ -362,11 +394,12 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_R1:
 				// R1 -> ^ U R1 | eps
-				// R1 -> ^ U sem_match R1 | eps
+				// R1 -> ^ U sem_matchBool gener R1 | eps
 				if (t == TOR)
 				{
 					m[z++] = neterm_R1;
-					m[z++] = sem_match;
+					m[z++] = sem_gener;
+					m[z++] = sem_matchBool;
 					m[z++] = neterm_U;
 					m[z++] = TXOR;
 				}
@@ -384,11 +417,12 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_U1:
 				// U1 -> & V U1 | eps
-				// U1 -> & V sem_match U1 | eps
+				// U1 -> & V sem_matchBool gener U1 | eps
 				if (t == TAnd)
 				{
 					m[z++] = neterm_U1;
-					m[z++] = sem_match;
+					m[z++] = sem_gener;
+					m[z++] = sem_matchBool;
 					m[z++] = neterm_V;
 					m[z++] = TAnd;
 				}
@@ -406,10 +440,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_V1:
 				// V1 -> == W V1 | != W V1 | eps
-				// V1 -> == W sem_match V1 | != W sem_match V1 | eps
+				// V1 -> == W sem_match gener V1 | != W sem_match geer V1 | eps
 				if (t == TEQ || t == TNEQ)
 				{
 					m[z++] = neterm_V1;
+					m[z++] = sem_gener;
 					m[z++] = sem_match;
 					m[z++] = neterm_W;
 					m[z++] = t;
@@ -428,10 +463,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_W1:
 				// W1 -> < X W1 | <= X W1 | > X W1 | >= X W1 | eps
-				// W1 -> < X sem_match W1 | <= X sem_match W1 | > X sem_match W1 | >= X sem_match W1 | eps
+				// W1 -> < X sem_match gener W1 | <= X sem_match gener W1 | > X sem_match gener W1 | >= X sem_match gener W1 | eps
 				if (t >= TLT && t <= TGE)
 				{
 					m[z++] = neterm_W1;
+					m[z++] = sem_gener;
 					m[z++] = sem_match;
 					m[z++] = neterm_X;
 					m[z++] = t;
@@ -450,10 +486,11 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_X1:
 				// X1 -> + Y X1 | - Y X1 | eps
-				// X1 -> + Y sem_match X1 | - Y sem_match X1 | eps
+				// X1 -> + Y sem_match gener X1 | - Y sem_match gener X1 | eps
 				if (t == TPlus || t == TMinus)
 				{
 					m[z++] = neterm_X1;
+					m[z++] = sem_gener;
 					m[z++] = sem_match;
 					m[z++] = neterm_Y;
 					m[z++] = t;
@@ -472,11 +509,20 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_Y1:
 				// Y1 -> * Z Y1 | / Z Y1 | % Z Y1 | eps
-				// Y1 -> * Z sem_match Y1 | / Z sem_match Y1 | % Z sem_match Y1 | eps
-				if (t == TMult || t == TDiv || t == TMod)
+				// Y1 -> * Z sem_match gener Y1 | / Z sem_match gener Y1 | % Z sem_matchBool gener Y1 | eps
+				if (t == TMult || t == TDiv)
 				{
 					m[z++] = neterm_Y1;
+					m[z++] = sem_gener;
 					m[z++] = sem_match;
+					m[z++] = neterm_Z;
+					m[z++] = t;
+				}
+				else if (t == TMod)
+				{
+					m[z++] = neterm_Y1;
+					m[z++] = sem_gener;
+					m[z++] = sem_matchBool;
 					m[z++] = neterm_Z;
 					m[z++] = t;
 				}
@@ -488,17 +534,25 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_Z:
 				// Z -> + Z1 | - Z1 | Z1
-				m[z++] = neterm_Z1;
+				// Z -> + Z1 generUnar | - Z1 generUnar | Z1
 
 				if (t == TPlus || t == TMinus)
 				{
+					m[z++] = sem_generUnar;
+					m[z++] = neterm_Z1;
 					m[z++] = t;
 				}
+				else
+				{
+					m[z++] = neterm_Z1;
+				}
+
 				break;
 
 			case neterm_Z1:
 				// Z1 -> B P | C | main ( ) | ( Q )
 				// Z1 -> B P | C | main sem_findFunct ( ) | ( Q )
+				// Z1 -> B P | C constType | main sem_findFunct push ( ) generCall | ( Q )
 				if (t == TIdent)
 				{
 					m[z++] = neterm_P;
@@ -506,8 +560,10 @@ int LL1::LL_1() //функция синтаксического анализатора
 				}
 				else if (t == TMain)
 				{
+					m[z++] = sem_generCall;
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_push;
 					m[z++] = sem_findFunct;
 					m[z++] = TMain;
 				}
@@ -519,6 +575,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				}
 				else
 				{
+					m[z++] = sem_constType;
 					m[z++] = neterm_C;
 				}
 				break;
@@ -526,14 +583,18 @@ int LL1::LL_1() //функция синтаксического анализатора
 			case neterm_P:
 				// P -> ( ) | eps
 				// P -> sem_findFunct ( ) | sem_findVar
+				// P -> sem_findFunct push ( ) generCall | sem_findVar push
 				if (t == TLS)
 				{
+					m[z++] = sem_generCall;
 					m[z++] = TRS;
 					m[z++] = TLS;
+					m[z++] = sem_push;
 					m[z++] = sem_findFunct;
 				}
 				else
 				{
+					m[z++] = sem_push;
 					m[z++] = sem_findVar;
 				}
 				break;
@@ -571,7 +632,12 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = TConstFloat;
 				}
 				break;
-
+			}
+		}
+		else if (m[z] <= MaxTypeSem)	//в верхушке магазина операционный символ
+		{
+			switch (m[z])
+			{
 			case sem_startDeclare:
 				tran->deltaStartDeclare(m[z + 1]);
 				break;
@@ -582,9 +648,6 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case sem_findVar:
 				tran->deltaFindVar();
-				break;
-
-			case sem_match:
 				break;
 
 			case sem_setFunct:
@@ -611,6 +674,78 @@ int LL1::LL_1() //функция синтаксического анализатора
 				tran->deltaFindClass();
 				break;
 
+			case sem_constType:
+				tran->deltaConstType(m[z + 1]);
+				genIL->deltaPushType();
+				genIL->deltaPushRes(genIL->R(m[z + 1]));
+				break;
+
+			case sem_match:
+				genIL->deltaMatch();
+				break;
+
+			case sem_matchLeft:
+				genIL->deltaMatchLeft();
+				break;
+
+			case sem_matchBool:
+				genIL->deltaMatchBool();
+				break;
+
+			case sem_push:
+				genIL->deltaPushType();
+				genIL->deltaPushRes(genIL->R());
+				break;
+
+			case sem_gener:
+				genIL->deltaGener(global->operation.back());
+				global->operation.pop_back();
+				break;
+
+			case sem_generUnar:
+				genIL->deltaGenerUnar(global->operation.back());
+				global->operation.pop_back();
+				break;
+
+			case sem_generIf:
+				genIL->deltaGenerIf();
+				break;
+
+			case sem_formIf:
+				genIL->deltaFormIf();
+				break;
+
+			case sem_generGoto:
+				genIL->deltaGenerGoto();
+				break;
+
+			case sem_formGoto:
+				genIL->deltaFormGoto();
+				break;
+
+			case sem_generNop:
+				genIL->deltaGenerNop();
+				break;
+
+			case sem_setAddr:
+				genIL->deltaSetAddr();
+				break;
+
+			case sem_generCall:
+				genIL->deltaGenerCall();
+				break;
+
+			case sem_startFunc:
+				genIL->deltaStartFunc();
+				break;
+
+			case sem_endFunc:
+				genIL->deltaEndFunc();
+				break;
+
+			case sem_generReturn:
+				genIL->deltaGenerReturn();
+				break;
 			}
 		}
 
@@ -625,17 +760,28 @@ void LL1::PrintTree()
 	tran->PrintTree();
 }
 
+void LL1::PrintTriada()
+{
+	genIL->printTriadaCode();
+}
+
 LL1::LL1(Scaner* scan)
 {
 	this->scan = scan;
 	z = 0;
-	this->tran = new Translate(scan);
+	this->root = new Tree(scan);
+	this->global = new GlobalData();
+	this->tran = new Translate(root, global);
+	this->genIL = new GenerIL(root, global);
 }
 
 LL1::~LL1()
 {
 	tran->CleanTree();
+
 	delete tran;
+	delete genIL;
+	delete scan;
 }
 
 void LL1::epsilon()	//обработка правила с пустой правой частью

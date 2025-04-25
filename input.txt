@@ -2,17 +2,21 @@ class pos {bool t;};
 
 bool func()
 {
+	bool nas = 2;
+	nas = nas && 0;
 	double a;
 	if (a == 1)
 	{
 		bool r;
 		pos cl;
-		cl.Set_qwert();
 		double rt = 5;
 	}
 	else
 	{
-		bool k;
+		bool k = true;
+		if (k)
+		{k = false;}
+		//k = k && 0;
 	}
 }
 
