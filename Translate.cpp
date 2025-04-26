@@ -46,7 +46,15 @@ void Translate::deltaSetIdent()
 
 void Translate::deltaFindVar()
 {
-	root->SemGetVar(global->prevLex);
+	if (global->obj)
+	{
+		global->obj = false;
+		global->dataType = root->FindRightLeftVar(global->prevLex)->GetType();
+	}
+	else
+	{
+		global->dataType = root->SemGetVar(global->prevLex)->GetType();
+	}
 }
 
 void Translate::deltaSetFunct()
@@ -78,7 +86,16 @@ void Translate::deltaSetClass()
 
 void Translate::deltaFindFunct()
 {
-	root->SemGetFunct(global->prevLex);
+	if (global->obj)
+	{
+		global->obj = false;
+		global->dataType = root->FindRightLeftFunct(global->prevLex)->GetType();
+
+	}
+	else
+	{
+		global->dataType = root->SemGetFunct(global->prevLex)->GetType();
+	}
 }
 
 void Translate::deltaFindClass()

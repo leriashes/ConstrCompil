@@ -607,11 +607,12 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case neterm_B1:
 				// B1 -> . a B1 | eps
-				// B1 -> sem_findVar . a B1 | eps
+				// B1 -> sem_findVar . sem_checkObject a B1 | eps
 				if (t == TTochka)
 				{
 					m[z++] = neterm_B1;
 					m[z++] = TIdent;
+					m[z++] = sem_checkObject;
 					m[z++] = TTochka;
 					m[z++] = sem_findVar;
 				}
@@ -652,6 +653,10 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case sem_setFunct:
 				tran->deltaSetFunct();
+				break;
+
+			case sem_checkObject:
+				global->obj = true;
 				break;
 
 			case sem_returnLevel:

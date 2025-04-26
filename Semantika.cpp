@@ -333,7 +333,6 @@ Tree* Tree::SemInclude(LEX a, OBJ_TYPE ot, DATA_TYPE t, LEX className)
 	Tree* v;
 	Node n;
 
-
 	memcpy(n.id, a, strlen(a) + 1);
 	n.objType = ot;
 	n.data.dataType = t;
@@ -357,6 +356,9 @@ Tree* Tree::SemInclude(LEX a, OBJ_TYPE ot, DATA_TYPE t, LEX className)
 		cur = cur->right;
 		return v;
 	}
+
+	Tree* cl = SemGetClass(className);
+	cur->MakeClassCopy(cl);
 
 	return cur;
 }
