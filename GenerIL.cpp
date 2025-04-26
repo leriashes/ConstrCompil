@@ -116,7 +116,7 @@ void GenerIL::deltaFormGoto()
 
 	global->addr.pop_back();
 
-	global->code[addr].operand1.number = global->k + 1;
+	global->code[addr].operand1.number = global->k;
 	global->code[addr].operand1.isLink = true;
 }
 
