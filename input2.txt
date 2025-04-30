@@ -1,0 +1,29 @@
+class pos {bool t; double x;};
+
+bool func()
+{
+	bool u;
+	double nb;
+	u = true;
+
+	bool nas = 2;
+	nas = nas && 0;
+	double a;
+	if (a == 1)
+	{
+		bool r;
+		pos cl;
+		r = true;
+		cl.t = true;
+		cl.x = 32.1;
+		double rt = 5;
+	}
+	else
+	{
+		bool k = true;
+		if (k)
+		{k = false;}
+		k = k && 0;
+	}
+}
+

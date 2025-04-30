@@ -26,7 +26,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 					t = scan->FScaner(l);
 				}
 
-				if (t >= TOR && t <= TMod)
+				if (t >= TOR && t <= TMod || t == TReturn)
 				{
 					genIL->saveOperator(t);
 				}
@@ -750,6 +750,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 
 			case sem_generReturn:
 				genIL->deltaGenerReturn();
+				global->operation.pop_back();
 				break;
 			}
 		}

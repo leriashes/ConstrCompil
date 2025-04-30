@@ -1,6 +1,7 @@
 #include "Semantika.h"
 
 Tree* Tree::cur = (Tree*)NULL;
+Tree* Tree::cur_find = (Tree*)NULL;
 Scaner* Tree::scan = (Scaner*)NULL;
 Tree* Tree::lastcur = (Tree*)NULL;
 
@@ -18,6 +19,7 @@ Tree::Tree(Scaner* scan)
 
 	lastcur = this;
 	cur = this;
+	cur_find = this;
 }
 
 Tree::Tree(Node* data, Tree* parent)
@@ -121,51 +123,51 @@ Tree* Tree::FindRightLeft(Tree* from, LEX id)
 
 Tree* Tree::FindRightLeftVar(LEX id)
 {
-	Tree* v = FindRightLeft(this, id);
+	cur_find = FindRightLeft(cur_find, id);
 
-	if (v == NULL)
+	if (cur_find == NULL)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Отсутствует описание идентификатора");
 	}
 
-	if (v->node->objType == ObjFunct)
+	if (cur_find->node->objType == ObjFunct)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Неверное использование имени функции");
 	}
 
-	if (v->node->objType == ObjClass)
+	if (cur_find->node->objType == ObjClass)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Неверное использование имени класса");
 	}
 
-	return v;
+	return cur_find;
 }
 
 Tree* Tree::FindRightLeftFunct(LEX id)
 {
-	Tree* v = FindRightLeft(this, id);
+	cur_find = FindRightLeft(cur_find, id);
 
-	if (v == NULL)
+	if (cur_find == NULL)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Отсутствует описание метода");
 	}
 
-	if (v->node->objType != ObjFunct)
+	if (cur_find->node->objType != ObjFunct)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Идентификатор не является именем метода");
 	}
 
-	return v;
+	return cur_find;
 }
 
 void Tree::CleanTree()
@@ -233,6 +235,7 @@ void Tree::Print()
 void Tree::SetCur(Tree* a)
 {
 	cur = a;
+	cur_find = cur;
 }
 
 Tree* Tree::GetCur()
@@ -272,6 +275,7 @@ Tree* Tree::SemInclude(Tree* first)
 
 		cur->SetRight(&n);
 		cur = cur->right;
+		cur_find = cur;
 		return v;
 	}
 	else
@@ -313,8 +317,11 @@ Tree* Tree::SemInclude(LEX a, OBJ_TYPE ot, DATA_TYPE t)
 
 		cur->SetRight(&n);
 		cur = cur->right;
+		cur_find = cur;
 		return v;
 	}
+
+	cur_find = cur;
 
 	return cur;
 }
@@ -354,41 +361,44 @@ Tree* Tree::SemInclude(LEX a, OBJ_TYPE ot, DATA_TYPE t, LEX className)
 
 		cur->SetRight(&n);
 		cur = cur->right;
+		cur_find = cur;
 		return v;
 	}
 
 	Tree* cl = SemGetClass(className);
 	cur->MakeClassCopy(cl);
 
+	cur_find = cur;
+
 	return cur;
 }
 
 Tree* Tree::SemGetVar(LEX a)
 {
-	Tree* v = FindUp(cur, a);
+	cur_find = FindUp(cur, a);
 
-	if (v == NULL)
+	if (cur_find == NULL)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Отсутствует описание идентификатора");
 	}
 
-	if (v->node->objType == ObjFunct)
+	if (cur_find->node->objType == ObjFunct)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Неверное использование имени функции");
 	}
 
-	if (v->node->objType == ObjClass)
+	if (cur_find->node->objType == ObjClass)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Неверное использование имени класса");
 	}
 
-	return v;
+	return cur_find;
 }
 
 Tree* Tree::SemNewLevel()
@@ -405,6 +415,8 @@ Tree* Tree::SemNewLevel()
 	cur->SetRight(&n);
 	cur = cur->right;
 
+	cur_find = cur;
+
 	return v;
 }
 
@@ -419,28 +431,29 @@ Tree* Tree::SemReturnLevel()
 	}
 
 	cur = cur->parent;
+	cur_find = cur;
 	return SemReturnLevel();
 }
 
 Tree* Tree::SemGetFunct(LEX a)
 {
-	Tree* v = FindUp(cur, a);
+	cur_find = FindUp(cur, a);
 
-	if (v == NULL)
+	if (cur_find == NULL)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Отсутствует описание функции");
 	}
 
-	if (v->node->objType != ObjFunct)
+	if (cur_find->node->objType != ObjFunct)
 	{
 		Tree* root = FindRoot();
 		root->Print();
 		scan->PrintError("Идентификатор не является именем функции");
 	}
 
-	return v;
+	return cur_find;
 }
 
 Tree* Tree::SemGetClass(LEX a)
@@ -852,6 +865,7 @@ void Tree::Back()
 	delete cur->left;
 	cur->left = lastleft;
 	cur = lastcur;
+	cur_find = cur;
 }
 
 

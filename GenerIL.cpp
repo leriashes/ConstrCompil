@@ -138,7 +138,7 @@ void GenerIL::deltaGenerCall()
 
 	triada.operation = callOper;
 
-	if (global->operation.size() != 1)
+	if (global->operation.size() != 0)
 	{
 		global->res.push_back(currentLink());
 	}

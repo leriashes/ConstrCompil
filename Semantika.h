@@ -56,6 +56,7 @@ public:
 
 	static Scaner* scan;
 	static Tree* cur;		//текущий элемент дерева
+	static Tree* cur_find;
 
 	Tree(Tree* p, Tree* l, Tree* r, Node* data);
 	Tree(Scaner* scan);
