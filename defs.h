@@ -119,23 +119,24 @@ typedef char LEX[MAX_LEX];   //лексема
 #define sem_findFunct			1107
 #define sem_findClass			1108
 #define sem_constType			1109
+#define sem_checkObject			1110
 
-#define sem_match				1110
-#define sem_matchLeft			1111
-#define sem_matchBool			1112
-#define sem_push				1113
-#define sem_gener				1114	
-#define sem_generIf				1115
-#define sem_formIf				1116
-#define sem_generGoto			1117
-#define sem_formGoto			1118
-#define sem_generNop			1119
-#define sem_setAddr				1120
-#define sem_generCall			1121
-#define sem_startFunc			1122
-#define sem_endFunc				1123
-#define sem_generReturn			1124
-#define sem_generUnar			1125
+#define sem_match				1120
+#define sem_matchLeft			1121
+#define sem_matchBool			1122
+#define sem_push				1123
+#define sem_gener				1124	
+#define sem_generIf				1125
+#define sem_formIf				1126
+#define sem_generGoto			1127
+#define sem_formGoto			1128
+#define sem_generNop			1129
+#define sem_setAddr				1130
+#define sem_generCall			1131
+#define sem_startFunc			1132
+#define sem_endFunc				1133
+#define sem_generReturn			1134
+#define sem_generUnar			1135
 
 #define MaxTypeSem				sem_generUnar
 

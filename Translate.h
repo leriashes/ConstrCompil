@@ -13,6 +13,7 @@ struct GlobalData
 	DATA_TYPE dataType;
 
 	int k;
+	bool obj;
 	deque<DATA_TYPE> t;
 	Triada code[MAXCODE];
 	deque<Operand> res;

@@ -116,7 +116,7 @@ void GenerIL::deltaFormGoto()
 
 	global->addr.pop_back();
 
-	global->code[addr].operand1.number = global->k + 1;
+	global->code[addr].operand1.number = global->k;
 	global->code[addr].operand1.isLink = true;
 }
 
@@ -304,7 +304,7 @@ void GenerIL::deltaMatchBool()
 
 	if (second != TYPE_BOOL)
 	{
-		needIntType(operand2);
+		needBoolType(operand2);
 	}
 
 	global->res.pop_back();
@@ -313,7 +313,7 @@ void GenerIL::deltaMatchBool()
 
 	if (first != TYPE_BOOL)
 	{
-		needIntType(operand1);
+		needBoolType(operand1);
 	}
 
 	global->res.push_back(operand2);
@@ -370,6 +370,18 @@ Operand GenerIL::R(int operand)
 		result.isLink = false;
 		memcpy(result.lex, global->prevLex, strlen(global->prevLex) + 1);
 	}
+	else if (operand == TTrue)
+	{
+		result.isConst = true;
+		result.isLink = false;
+		memcpy(result.lex, "1", 3);
+	}
+	else if (operand == TFalse)
+	{
+		result.isConst = true;
+		result.isLink = false;
+		memcpy(result.lex, "0", 3);
+	}
 	else
 	{
 		result.isConst = false;
@@ -422,4 +434,136 @@ Operand GenerIL::currentLink()
 	link.number = global->k;
 
 	return link;
+}
+
+void GenerIL::needBoolType(Operand operand)
+{
+	if (!operand.isLink)
+	{
+		root->scan->PrintError("Выражение должно относиться к целочисленному типу", operand.lex);
+	}
+	else
+	{
+		root->scan->PrintError("Выражение должно относиться к целочисленному типу");
+	}
+}
+
+string GenerIL::operationToSymbols(int operation)
+{
+	switch (operation)
+	{
+	case TSave:
+		return "=";
+
+	case TEQ:
+		return "==";
+
+	case TNEQ:
+		return "!=";
+
+	case TLT:
+		return "<";
+
+	case TGT:
+		return ">";
+
+	case TLE:
+		return "<=";
+
+	case TGE:
+		return ">=";
+
+	case TOR:
+		return "|";
+
+	case TXOR:
+		return "^";
+
+	case TAnd:
+		return "&";
+
+	case TPlus:
+		return "+";
+
+	case TMinus:
+		return "-";
+
+	case TMult:
+		return "*";
+
+	case TDiv:
+		return "/";
+
+	case TMod:
+		return "%";
+
+	case boolToDouble:
+		return "bool->double";
+
+	case doubleToBool:
+		return "double->bool";
+
+	case ifOper:
+		return "if";
+
+	case gotoOper:
+		return "goto";
+
+	case nopOper:
+		return "nop";
+
+	case callOper:
+		return "call";
+
+	case procOper:
+		return "proc";
+
+	case prologOper:
+		return "prolog";
+
+	case epilogOper:
+		return "epilog";
+
+	case retOper:
+		return "ret";
+
+	case endpOper:
+		return "endp";
+
+	case returnOper:
+		return "return";
+
+	default:
+		return "UNKNOWN_OPERATION";
+	}
+}
+
+void GenerIL::printTriadaCode()
+{
+	cout << "\n\nТРИАДЫ\n";
+
+	for (int i = 0; i < global->k; i++)
+	{
+		Triada triada = global->code[i];
+
+		cout << i + 1 << ") " << operationToSymbols(triada.operation) << " ";
+
+		if (triada.operation < prologOper)
+		{
+			if (triada.operand1.isLink)
+				cout << "(" << triada.operand1.number + 1 << ") ";
+			else
+				cout << triada.operand1.lex << " ";
+
+			if (triada.operation < boolToDouble || triada.operation == ifOper)
+			{
+				if (triada.operand2.isLink)
+					cout << "(" << triada.operand2.number + 1 << ") ";
+				else
+					cout << triada.operand2.lex << " ";
+			}
+		}
+
+		cout << endl;
+	}
 }
