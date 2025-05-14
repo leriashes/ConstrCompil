@@ -12,6 +12,8 @@ enum OBJ_TYPE {
 
 enum DATA_TYPE { NO_TYPE = 0, TYPE_BOOL, TYPE_DOUBLE, TYPE_OBJ_CL};
 
+enum TYPE_DECL { DQ = 8, DD = 4, DW = 2, DB = 1 };
+
 union DATA_VALUE 
 {
 	bool DataAsBool;
@@ -39,6 +41,11 @@ struct Node
 	LEX id_asm;			//уникальный идентификатор
 	DataS data;
 	FStart funcStart; //начало функции
+
+	TYPE_DECL type;		//декларируемый тип
+	int len = 1;		//длина в единицах TYPE_DECL
+	int level;			//уровень вложенности
+	int stackAddr;		//смещение в стеке
 };
 
 class Tree			//элемент семантической таблицы
@@ -113,5 +120,11 @@ public:
 	DataS TypeCastingAssign(DATA_TYPE firstType, DataS second, LEX firstTypeName, LEX secondTypeName);	//приведение типов при присваивании
 
 	void CheckTypeBool(DATA_TYPE type);
+	void SetLevel(int level);
+
+	OBJ_TYPE GetObjType();
+	int GetLevel();
+	Tree* GetLeft();
+	string GenPublicName();
 };
 

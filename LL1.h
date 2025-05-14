@@ -23,5 +23,6 @@ public:
 
 	int LL_1();
 	void PrintTree();
-	void PrintTriada();
+	void PrintTriada(); 
+	void GenCode();
 };

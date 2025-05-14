@@ -1,5 +1,7 @@
 class pos {bool t; double x;};
 
+bool s;
+
 bool func()
 {
 	bool u;

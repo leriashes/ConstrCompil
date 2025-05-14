@@ -771,6 +771,11 @@ void LL1::PrintTriada()
 	genIL->printTriadaCode();
 }
 
+void LL1::GenCode()
+{
+	genIL->generateCode();
+}
+
 LL1::LL1(Scaner* scan)
 {
 	this->scan = scan;

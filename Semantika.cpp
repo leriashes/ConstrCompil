@@ -863,6 +863,41 @@ void Tree::CheckTypeBool(DATA_TYPE type)
 	}
 }
 
+void Tree::SetLevel(int level)
+{
+	node->level = level;
+
+	if (right != NULL)
+	{
+		right->SetLevel(level + 1);
+	}
+
+	if (left != NULL)
+	{
+		left->SetLevel(level);
+	}
+}
+
+OBJ_TYPE Tree::GetObjType()
+{
+	return node->objType;
+}
+
+int Tree::GetLevel()
+{
+	return node->level;
+}
+
+Tree* Tree::GetLeft()
+{
+	return left;
+}
+
+string Tree::GenPublicName()
+{
+	return string(this->node->id_asm) + " ; " + string(this->node->id);
+}
+
 void Tree::Back()
 {
 	cur->CleanChild();

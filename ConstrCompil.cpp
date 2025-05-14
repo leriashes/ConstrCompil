@@ -31,6 +31,7 @@ int main()
     ll.PrintTree();
 
     ll.PrintTriada();
+    ll.GenCode();
 
     return 0;
 }

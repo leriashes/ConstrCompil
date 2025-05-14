@@ -1,5 +1,20 @@
 #include "GenerIL.h"
 
+void GenerIL::generatePublic(Tree* node)
+{
+	OBJ_TYPE obj = node->GetObjType();
+	int level = node->GetLevel();
+	if (node->GetObjType() == ObjVar && node->GetLevel() == 0)
+	{
+		file << "PUBLIC " + node->GenPublicName() << endl;
+	}
+
+	if (node->GetLeft() != NULL)
+	{
+		generatePublic(node->GetLeft());
+	}
+}
+
 GenerIL::GenerIL(Tree* root, GlobalData* global)
 {
 	this->root = root;
@@ -565,5 +580,24 @@ void GenerIL::printTriadaCode()
 		}
 
 		cout << endl;
+	}
+}
+
+void GenerIL::generateCode()
+{
+	int level = 0;
+	root->SetLevel(level);
+
+	file = ofstream("prog.asm");
+
+	if (file.is_open()) {
+		file << "_BSS SEGMENT" << endl;
+
+		generatePublic(root);
+
+		file.close();
+	}
+	else {
+		std::cerr << "Не удалось открыть файл!" << std::endl;
 	}
 }
