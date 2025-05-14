@@ -301,11 +301,23 @@ Tree* Tree::SemInclude(LEX a, OBJ_TYPE ot, DATA_TYPE t)
 	Node n;
 
 	memcpy(n.id, a, strlen(a) + 1);
-	string id_asm = string(a) + "@" + std::format("{}", static_cast<void*>(&n));
-	memcpy(n.id_asm, id_asm.c_str(), id_asm.size() + 1);
 	n.objType = ot;
 	n.data.dataType = t;
 	memcpy(n.data.className, "", strlen("") + 1);
+
+	switch (t)
+	{
+	case TYPE_BOOL:
+		n.type = DB;
+		break;
+	case TYPE_DOUBLE:
+		n.type = DQ;
+		break;
+	}
+
+	string id_asm = string(node->id) + "@" + std::format("{}", static_cast<void*>(node));
+	memcpy(node->id_asm, id_asm.c_str(), id_asm.size() + 1);
+
 
 	if (this->node->objType == Empty && this->parent == NULL && this->left == NULL && this->right == NULL)
 		memcpy(node, &n, sizeof(Node));
@@ -896,6 +908,28 @@ Tree* Tree::GetLeft()
 string Tree::GenPublicName()
 {
 	return string(this->node->id_asm) + " ; " + string(this->node->id);
+}
+
+string Tree::GenPublicDecl()
+{
+	string type;
+
+	switch (node->type) {
+	case DD:
+		type = "DD";
+		break;
+	case DQ:
+		type = "DQ";
+		break;
+	case DW:
+		type = "DW";
+		break;
+	case DB:
+		type = "DB";
+		break;
+	}
+
+	return string(this->node->id_asm) + " " + type + " " + std::format("0{:X}H", node->len) + " DUP(?) ; " + string(this->node->id);
 }
 
 void Tree::Back()

@@ -2,8 +2,6 @@
 
 void GenerIL::generatePublic(Tree* node)
 {
-	OBJ_TYPE obj = node->GetObjType();
-	int level = node->GetLevel();
 	if (node->GetObjType() == ObjVar && node->GetLevel() == 0)
 	{
 		file << "PUBLIC " + node->GenPublicName() << endl;
@@ -12,6 +10,19 @@ void GenerIL::generatePublic(Tree* node)
 	if (node->GetLeft() != NULL)
 	{
 		generatePublic(node->GetLeft());
+	}
+}
+
+void GenerIL::generateDeclVars(Tree* node)
+{
+	if (node->GetObjType() == ObjVar && node->GetLevel() == 0)
+	{
+		file << node->GenPublicDecl() << endl;
+	}
+
+	if (node->GetLeft() != NULL)
+	{
+		generateDeclVars(node->GetLeft());
 	}
 }
 
@@ -594,6 +605,9 @@ void GenerIL::generateCode()
 		file << "_BSS SEGMENT" << endl;
 
 		generatePublic(root);
+		file << endl;
+
+		generateDeclVars(root);
 
 		file.close();
 	}

@@ -12,6 +12,7 @@ private:
 	ofstream file;
 
 	void generatePublic(Tree* node);
+	void generateDeclVars(Tree* node);
 
 public:
 	GenerIL(Tree* root, GlobalData* global);

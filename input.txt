@@ -1,6 +1,8 @@
 class pos {bool t; double x;};
 
-bool s;
+bool s, t , y;
+double bla, bg = 5, g;
+bool a;
 
 bool func()
 {
