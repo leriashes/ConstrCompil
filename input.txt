@@ -6,7 +6,7 @@ bool func()
 	double nb;
 	u = true;
 
-	bool nas = 2;
+	bool nas = 2 + 4 -1 * 7 - 34;
 	nas = nas && 0;
 	double a;
 	if (a == 1)
