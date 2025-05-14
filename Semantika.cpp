@@ -932,6 +932,11 @@ string Tree::GenPublicDecl()
 	return string(this->node->id_asm) + " " + type + " " + std::format("0{:X}H", node->len) + " DUP(?) ; " + string(this->node->id);
 }
 
+void Tree::GetAsmId(LEX* id)
+{
+	memcpy(*id, node->id_asm, strlen(node->id_asm) + 1);
+}
+
 void Tree::Back()
 {
 	cur->CleanChild();

@@ -127,5 +127,6 @@ public:
 	Tree* GetLeft();
 	string GenPublicName();
 	string GenPublicDecl();
+	void GetAsmId(LEX* id);
 };
 
