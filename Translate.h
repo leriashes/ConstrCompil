@@ -11,6 +11,7 @@ struct GlobalData
 	LEX prevLex;
 	LEX className;
 	DATA_TYPE dataType;
+	DATA_TYPE constType;
 
 	int k;
 	bool obj;

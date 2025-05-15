@@ -38,6 +38,7 @@ public:
 	void deltaMatch();
 	void deltaMatchLeft();
 	void deltaMatchBool();
+	void deltaPushConstType();
 
 	Operand R(int operand);
 	Operand R();

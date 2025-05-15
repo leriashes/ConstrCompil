@@ -107,7 +107,7 @@ void Translate::deltaFindClass()
 void Translate::deltaConstType(int constTerm)
 {
 	if (constTerm == TConstInt || constTerm == TTrue || constTerm == TFalse)
-		global->dataType = TYPE_BOOL;
+		global->constType = TYPE_BOOL;
 	else
-		global->dataType = TYPE_DOUBLE;
+		global->constType = TYPE_DOUBLE;
 }

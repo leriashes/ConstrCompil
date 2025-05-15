@@ -431,6 +431,11 @@ void GenerIL::deltaMatchBool()
 	global->t.push_back(resType);
 }
 
+void GenerIL::deltaPushConstType()
+{
+	global->t.push_back(global->constType);
+}
+
 Operand GenerIL::R(int operand)
 {
 	Operand result;
