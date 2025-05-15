@@ -25,11 +25,6 @@ int LL1::LL_1() //функция синтаксического анализатора
 					tran->SaveLex(l);
 					t = scan->FScaner(l);
 				}
-
-				if (t >= TOR && t <= TMod || t == TReturn)
-				{
-					genIL->saveOperator(t);
-				}
 			}
 			else
 			{
@@ -146,6 +141,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = TSave;
 					m[z++] = sem_push;
 					m[z++] = sem_setIdent;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -313,6 +310,7 @@ int LL1::LL_1() //функция синтаксического анализатора
 				m[z++] = sem_matchLeft;
 				m[z++] = neterm_Q;
 				m[z++] = TReturn;
+				genIL->saveOperator(TReturn);
 				break;
 
 			case neterm_N:
@@ -340,6 +338,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = TSave;
 					m[z++] = sem_push;
 					m[z++] = sem_findVar;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -379,6 +379,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_matchBool;
 					m[z++] = neterm_R;
 					m[z++] = TOR;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -402,6 +404,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_matchBool;
 					m[z++] = neterm_U;
 					m[z++] = TXOR;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -425,6 +429,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_matchBool;
 					m[z++] = neterm_V;
 					m[z++] = TAnd;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -448,6 +454,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_match;
 					m[z++] = neterm_W;
 					m[z++] = t;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -471,6 +479,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_match;
 					m[z++] = neterm_X;
 					m[z++] = t;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -494,6 +504,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_match;
 					m[z++] = neterm_Y;
 					m[z++] = t;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
@@ -517,6 +529,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_match;
 					m[z++] = neterm_Z;
 					m[z++] = t;
+
+					genIL->saveOperator(t);
 				}
 				else if (t == TMod)
 				{
@@ -541,6 +555,8 @@ int LL1::LL_1() //функция синтаксического анализатора
 					m[z++] = sem_generUnar;
 					m[z++] = neterm_Z1;
 					m[z++] = t;
+
+					genIL->saveOperator(t);
 				}
 				else
 				{
