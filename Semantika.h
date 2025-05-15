@@ -129,6 +129,7 @@ public:
 	string GenPublicDecl();
 	string GenPublicDeclClass();
 	void GetAsmId(LEX* id);
+	string GetAsmId();
 	int GetSize();
 	void SetSize(TYPE_DECL type, int len);
 };

@@ -2,7 +2,7 @@
 
 void GenerIL::generatePublic(Tree* node)
 {
-	if (node->GetLevel() == 0)
+	if ((node->GetObjType() == ObjVar || node->GetObjType() == ObjFunct || node->GetObjType() == ObjObjectCl) && node->GetLevel() == 0)
 	{
 		file << "PUBLIC " + node->GenPublicName() << endl;
 	}
@@ -19,7 +19,7 @@ void GenerIL::generateDecl(Tree* node)
 	{
 		file << node->GenPublicDecl() << endl;
 	}
-	else if (node->GetObjType() == ObjClass && node->GetLevel() == 0)
+	else if (node->GetObjType() == ObjObjectCl && node->GetLevel() == 0)
 	{
 		int len = countClassSize(node->GetRight()->GetLeft(), 0);
 
@@ -34,6 +34,22 @@ void GenerIL::generateDecl(Tree* node)
 	if (node->GetLeft() != NULL)
 	{
 		generateDecl(node->GetLeft());
+	}
+}
+
+void GenerIL::generateFunctions(Tree* node)
+{
+	if (node->GetObjType() == ObjFunct && node->GetLevel() == 0)
+	{
+		file << endl << "_TEXT SEGMENT" << endl;
+		file << node->GetAsmId() << " PROC" << endl;
+		file << node->GetAsmId() << " ENDP" << endl;
+		file << "_TEXT ENDS" << endl;
+	}
+
+	if (node->GetLeft() != NULL)
+	{
+		generateFunctions(node->GetLeft());
 	}
 }
 
@@ -665,6 +681,9 @@ void GenerIL::generateCode()
 		file << endl;
 
 		generateDecl(root);
+		file << endl;
+
+		generateFunctions(root);
 
 		file.close();
 	}

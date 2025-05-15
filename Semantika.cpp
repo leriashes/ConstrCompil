@@ -942,6 +942,11 @@ string Tree::GenPublicDeclClass()
 	return string(this->node->id_asm) + " DB " + std::format("0{:X}H", node->len) + " DUP(?) ; " + string(this->node->id);
 }
 
+string Tree::GetAsmId()
+{
+	return string(node->id_asm);
+}
+
 int Tree::GetSize()
 {
 	return node->len * node->type;

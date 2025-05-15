@@ -13,6 +13,7 @@ private:
 
 	void generatePublic(Tree* node);
 	void generateDecl(Tree* node);
+	void generateFunctions(Tree* node);
 
 	int countClassSize(Tree* node, int offset);
 

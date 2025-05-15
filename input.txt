@@ -4,12 +4,24 @@ class tpos {bool t;};
 
 class boss {bool a; bool b, c; bool d, e; double rra; tpos bobr;};
 
+pos var_pos, var_pos2;
+tpos var_tpos;
+boss var_boss;
+
 bool s, t , y;
 double bla, bg = 5, g;
 
 class gra{};
 
+gra var_gra;
+
 bool a;
+
+pos my_pos() 
+{
+	pos xy;
+	return xy;
+}
 
 bool func()
 {

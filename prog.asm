@@ -1,25 +1,39 @@
 _BSS SEGMENT
-PUBLIC pos@0x1a8bec9e190 ; pos
-PUBLIC tpos@0x1a8becd4f40 ; tpos
-PUBLIC boss@0x1a8becd5930 ; boss
-PUBLIC s@0x1a8becd8e40 ; s
-PUBLIC t@0x1a8becd8420 ; t
-PUBLIC y@0x1a8becd91a0 ; y
-PUBLIC bla@0x1a8becd8930 ; bla
-PUBLIC bg@0x1a8becd85d0 ; bg
-PUBLIC g@0x1a8becd8ff0 ; g
-PUBLIC gra@0x1a8becd8780 ; gra
-PUBLIC a@0x1a8becdca30 ; a
-PUBLIC func@0x1a8becdbe60 ; func
+PUBLIC var_pos@0x1f6b0308fc0 ; var_pos
+PUBLIC var_pos2@0x1f6b0308ab0 ; var_pos2
+PUBLIC var_tpos@0x1f6b030c850 ; var_tpos
+PUBLIC var_boss@0x1f6b030c4f0 ; var_boss
+PUBLIC s@0x1f6b030c190 ; s
+PUBLIC t@0x1f6b0310000 ; t
+PUBLIC y@0x1f6b0310510 ; y
+PUBLIC bla@0x1f6b0310f30 ; bla
+PUBLIC bg@0x1f6b030fca0 ; bg
+PUBLIC g@0x1f6b030f5e0 ; g
+PUBLIC var_gra@0x1f6b0310a20 ; var_gra
+PUBLIC a@0x1f6b0310360 ; a
+PUBLIC my_pos@0x1f6b030faf0 ; my_pos
+PUBLIC func@0x1f6b03115f0 ; func
 
-pos@0x1a8bec9e190 DB 011H DUP(?) ; pos
-tpos@0x1a8becd4f40 DB 01H DUP(?) ; tpos
-boss@0x1a8becd5930 DB 011H DUP(?) ; boss
-s@0x1a8becd8e40 DB 01H DUP(?) ; s
-t@0x1a8becd8420 DB 01H DUP(?) ; t
-y@0x1a8becd91a0 DB 01H DUP(?) ; y
-bla@0x1a8becd8930 DQ 01H DUP(?) ; bla
-bg@0x1a8becd85d0 DQ 01H DUP(?) ; bg
-g@0x1a8becd8ff0 DQ 01H DUP(?) ; g
-gra@0x1a8becd8780 DB 01H DUP(?) ; gra
-a@0x1a8becdca30 DB 01H DUP(?) ; a
+var_pos@0x1f6b0308fc0 DB 011H DUP(?) ; var_pos
+var_pos2@0x1f6b0308ab0 DB 011H DUP(?) ; var_pos2
+var_tpos@0x1f6b030c850 DB 01H DUP(?) ; var_tpos
+var_boss@0x1f6b030c4f0 DB 011H DUP(?) ; var_boss
+s@0x1f6b030c190 DB 01H DUP(?) ; s
+t@0x1f6b0310000 DB 01H DUP(?) ; t
+y@0x1f6b0310510 DB 01H DUP(?) ; y
+bla@0x1f6b0310f30 DQ 01H DUP(?) ; bla
+bg@0x1f6b030fca0 DQ 01H DUP(?) ; bg
+g@0x1f6b030f5e0 DQ 01H DUP(?) ; g
+var_gra@0x1f6b0310a20 DB 01H DUP(?) ; var_gra
+a@0x1f6b0310360 DB 01H DUP(?) ; a
+
+
+_TEXT SEGMENT
+my_pos@0x1f6b030faf0 PROC
+my_pos@0x1f6b030faf0 ENDP
+_TEXT ENDS
+
+_TEXT SEGMENT
+func@0x1f6b03115f0 PROC
+func@0x1f6b03115f0 ENDP
+_TEXT ENDS
