@@ -937,6 +937,22 @@ void Tree::GetAsmId(LEX* id)
 	memcpy(*id, node->id_asm, strlen(node->id_asm) + 1);
 }
 
+string Tree::GenPublicDeclClass()
+{
+	return string(this->node->id_asm) + " DB " + std::format("0{:X}H", node->len) + " DUP(?) ; " + string(this->node->id);
+}
+
+int Tree::GetSize()
+{
+	return node->len * node->type;
+}
+
+void Tree::SetSize(TYPE_DECL type, int len)
+{
+	node->type = type;
+	node->len = len;
+}
+
 void Tree::Back()
 {
 	cur->CleanChild();

@@ -13,17 +13,62 @@ void GenerIL::generatePublic(Tree* node)
 	}
 }
 
-void GenerIL::generateDeclVars(Tree* node)
+void GenerIL::generateDecl(Tree* node)
 {
 	if (node->GetObjType() == ObjVar && node->GetLevel() == 0)
 	{
 		file << node->GenPublicDecl() << endl;
 	}
+	else if (node->GetObjType() == ObjClass && node->GetLevel() == 0)
+	{
+		int len = countClassSize(node->GetRight()->GetLeft(), 0);
+
+		if (len > 0)
+			node->SetSize(DB, len);
+		else
+			node->SetSize(DB, 1);
+
+		file << node->GenPublicDecl() << endl;
+	}
 
 	if (node->GetLeft() != NULL)
 	{
-		generateDeclVars(node->GetLeft());
+		generateDecl(node->GetLeft());
 	}
+}
+
+int GenerIL::countClassSize(Tree* node, int offset)
+{
+	int t = 0;
+
+	if (node != NULL)
+	{
+		if (node->GetObjType() == ObjVar || node->GetObjType() == ObjObjectCl)
+		{
+			if (node->GetObjType() == ObjObjectCl)
+			{
+				int len = countClassSize(node->GetRight()->GetLeft(), 0);
+
+				if (len > 0)
+					node->SetSize(DB, len);
+				else
+					node->SetSize(DB, 1);
+			}
+
+			t = node->GetSize();
+			if (offset % node->GetSize() != 0)
+			{
+				int delta = node->GetSize() - (offset % node->GetSize());
+				t += delta;
+			}
+			offset += t;
+			
+		}
+			
+		t += countClassSize(node->GetLeft(), offset);
+	}
+
+	return t;
 }
 
 GenerIL::GenerIL(Tree* root, GlobalData* global)
@@ -614,7 +659,7 @@ void GenerIL::generateCode()
 		generatePublic(root);
 		file << endl;
 
-		generateDeclVars(root);
+		generateDecl(root);
 
 		file.close();
 	}

@@ -127,6 +127,9 @@ public:
 	Tree* GetLeft();
 	string GenPublicName();
 	string GenPublicDecl();
+	string GenPublicDeclClass();
 	void GetAsmId(LEX* id);
+	int GetSize();
+	void SetSize(TYPE_DECL type, int len);
 };
 
