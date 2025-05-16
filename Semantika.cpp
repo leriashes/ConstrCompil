@@ -879,6 +879,14 @@ void Tree::SetLevel(int level)
 {
 	node->level = level;
 
+	if (level > 0)
+	{
+		string id_asm = "_" + string(node->id) + "$";
+		if (level > 2)
+			id_asm += std::to_string(level - 1);
+		memcpy(node->id_asm, id_asm.c_str(), id_asm.size() + 1);
+	}
+
 	if (right != NULL)
 	{
 		right->SetLevel(level + 1);

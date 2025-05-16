@@ -1,6 +1,7 @@
 #pragma once
 #include "defs.h"
 #include "Scaner.h"
+#include <string>
 
 enum OBJ_TYPE {
 	Empty = 0,

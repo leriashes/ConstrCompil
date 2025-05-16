@@ -1,5 +1,6 @@
 #pragma once
 #include "defs.h"
+#include "Semantika.h"
 
 struct Operand
 {
@@ -7,6 +8,7 @@ struct Operand
 	int number; //номер триады-ссылки
 	bool isLink; //является ли ссылкой
 	bool isConst; //константа
+	Tree* node;
 };
 
 struct Triada

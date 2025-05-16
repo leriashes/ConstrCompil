@@ -2,7 +2,7 @@
 
 void GenerIL::generatePublic(Tree* node)
 {
-	if ((node->GetObjType() == ObjVar || node->GetObjType() == ObjFunct || node->GetObjType() == ObjObjectCl) && node->GetLevel() == 0)
+	if (node != NULL && (node->GetObjType() == ObjVar || node->GetObjType() == ObjFunct || node->GetObjType() == ObjObjectCl) && node->GetLevel() == 0)
 	{
 		file << "PUBLIC " + node->GenPublicName() << endl;
 	}
@@ -46,6 +46,7 @@ void GenerIL::generateFunctions(Tree* node)
 		file << endl << "_TEXT SEGMENT" << endl;
 		generateLocals(node->GetRight()->GetLeft(), &offs);
 		file << node->GetAsmId() << " PROC" << endl;
+		generateCommands();
 		file << node->GetAsmId() << " ENDP" << endl;
 		file << "_TEXT ENDS" << endl;
 	}
@@ -81,6 +82,55 @@ void GenerIL::generateLocals(Tree* node, int* offs)
 		}
 
 		generateLocals(node->GetLeft(), offs);
+	}
+}
+
+void GenerIL::generateCommands()
+{
+	for (int i = 0; i < global->k; i++)
+	{
+		Triada triada = global->code[i];
+
+		if (!triada.operand1.isLink && (triada.operation >= TPlus && triada.operation <= TMinus || triada.operation >= TMult && triada.operation <= TDiv))
+		{
+			if (triada.operand1.isConst)
+				file << "mov eax, " << triada.operand1.lex << endl;
+			else
+				file << "mov eax, [" << triada.operand1.node->GetAsmId() << "]" << endl;
+		}
+
+		if (triada.operation < boolToDouble || triada.operation == ifOper)
+		{
+			if (triada.operation == TMinus)
+			{
+				file << "sub ";
+				file << "eax, ";
+			}
+			else if (triada.operation == TPlus)
+			{
+				file << "add ";
+				file << "eax, ";
+			}
+			else if (triada.operation == TMult)
+			{
+				file << "imul ";
+			}
+			else if (triada.operation == TDiv)
+			{
+				file << "idiv ";
+			}
+			else
+			{
+				continue;
+			}
+
+			if (triada.operand2.isLink)
+				file << "ebx" << endl;
+			else if (triada.operand2.isConst)
+				file << triada.operand2.lex << endl;
+			else
+				file << "[" << triada.operand2.node->GetAsmId() << "]" << endl;
+		}
 	}
 }
 
