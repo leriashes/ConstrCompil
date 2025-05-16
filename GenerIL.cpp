@@ -241,6 +241,40 @@ string GenerIL::getOperand(Operand operand)
 	}
 }
 
+void GenerIL::initRegisters()
+{
+	intReg.clear();
+	intReg.push_back({ "eax", false });
+	intReg.push_back({ "ebx", false });
+	intReg.push_back({ "ecx", false });
+	intReg.push_back({ "edx", false });
+	intReg.push_back({ "esi", false });
+	intReg.push_back({ "edi", false });
+}
+
+string GenerIL::getIntReg()
+{
+	for (auto& reg : intReg) {
+		if (!reg.second) {
+			reg.second = true;
+			return reg.first;
+		}
+	}
+
+	std::cerr << "Ошибка: не хватает регистров\n";
+	exit(1);
+}
+
+void GenerIL::freeIntReg(string reg_name)
+{
+	for (auto& reg : intReg) {
+		if (reg.first == reg_name) {
+			reg.second = false;
+			return;
+		}
+	}
+}
+
 GenerIL::GenerIL(Tree* root, GlobalData* global)
 {
 	this->root = root;
