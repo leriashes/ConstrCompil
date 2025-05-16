@@ -29,7 +29,7 @@ bool func()
 	double nb;
 	u = true;
 
-	bool nas = 2 + 4 -1 * 7 - 34, tas = a + 5;
+	bool nas = 2 + 4 -1 * 7 - 34 / a, tas = a + 5;
 	nas = nas && 0;
 	tas = nas -2;
 	double a;

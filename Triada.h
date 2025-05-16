@@ -11,8 +11,15 @@ struct Operand
 	Tree* node;
 };
 
+struct Result
+{
+	string nameResult; //имя регистра или области памяти
+	bool flagRegister; //признак хранения результата в регистре
+};
+
 struct Triada
 {
 	int operation; //операция
 	Operand operand1, operand2; //операнды
+	Result result; //информация о результате
 };

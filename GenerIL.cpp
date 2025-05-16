@@ -87,49 +87,95 @@ void GenerIL::generateLocals(Tree* node, int* offs)
 
 void GenerIL::generateCommands()
 {
+	initRegisters();
+
 	for (; pc < global->k; pc++)
 	{
-		Triada triada = global->code[pc];
+		Triada* triada = &global->code[pc];
 
-		if (triada.operation == endpOper)
+		if (triada->operation == endpOper)
 		{
 			break;
 		}
 
-		if (!triada.operand1.isLink && (triada.operation >= TPlus && triada.operation <= TMinus || triada.operation >= TMult && triada.operation <= TDiv))
+		string reg;
+
+		if (triada->operation == TDiv)
 		{
-			file << "mov eax, " << getOperand(triada.operand1) << endl;
+			reservIntReg("eax");
+			reservIntReg("edx");
+			file << "cdq" << endl;
 		}
 
-		if (triada.operation < boolToDouble || triada.operation == ifOper)
+		if (!triada->operand1.isLink)
 		{
-			if (triada.operation == TMinus)
+			if (triada->operation >= TPlus && triada->operation <= TMinus || triada->operation >= TMult && triada->operation <= TDiv)
+			{
+				if (triada->operation == TDiv)
+				{
+					reg = "eax";
+				}
+				else
+				{
+					reg = getIntReg();
+				}
+
+				triada->result.nameResult = reg;
+				triada->result.flagRegister = true;
+				regToTriad[reg] = pc;
+
+				file << "mov " << reg << ", " << getOperand(triada->operand1) << endl;
+			}
+		}
+		else
+		{
+			if (triada->operation >= TPlus && triada->operation <= TMinus || triada->operation >= TMult && triada->operation <= TDiv)
+			{
+				reg = global->code[triada->operand1.number].result.nameResult;
+				triada->result.nameResult = reg;
+				triada->result.flagRegister = true;
+				regToTriad[reg] = pc;
+			}
+		}
+
+		if (triada->operation < boolToDouble || triada->operation == ifOper)
+		{
+			if (triada->operation == TMinus)
 			{
 				file << "sub ";
-				file << "eax, ";
+				file << reg << ", ";
 			}
-			else if (triada.operation == TPlus)
+			else if (triada->operation == TPlus)
 			{
 				file << "add ";
-				file << "eax, ";
+				file << reg << ", ";
 			}
-			else if (triada.operation == TMult)
+			else if (triada->operation == TMult)
 			{
 				file << "imul ";
+				file << reg << ", ";
 			}
-			else if (triada.operation == TDiv)
+			else if (triada->operation == TDiv)
 			{
 				file << "idiv ";
+				freeIntReg("edx");
 			}
 			else
 			{
 				continue;
 			}
 
-			if (triada.operand2.isLink)
-				file << "ebx" << endl;
+			if (triada->operand2.isLink)
+			{
+				if (global->code[triada->operand2.number].result.flagRegister)
+				{
+					reg = global->code[triada->operand2.number].result.nameResult;
+					file << reg << endl;
+					freeIntReg(reg);
+				}
+			}
 			else
-				file << getOperand(triada.operand2) << endl;
+				file << getOperand(triada->operand2) << endl;
 		}
 	}
 }
@@ -270,6 +316,34 @@ void GenerIL::freeIntReg(string reg_name)
 	for (auto& reg : intReg) {
 		if (reg.first == reg_name) {
 			reg.second = false;
+			regToTriad.erase(reg.first);
+			return;
+		}
+	}
+}
+
+void GenerIL::reservIntReg(string reg_name)
+{
+	for (auto& reg : intReg) {
+		if (reg.first == reg_name) {
+			if (reg.second == true)
+			{
+				int triadIndex = regToTriad[reg_name];
+				string new_reg = getIntReg();
+				if (new_reg == "eax" || new_reg == "edx")
+				{
+					string cl_reg = new_reg;
+					new_reg = getIntReg();
+					freeIntReg(cl_reg);
+				}
+				global->code[triadIndex].result.nameResult = new_reg;
+
+				file << "mov " << new_reg << ", " << reg_name << endl;
+			}
+			else
+			{
+				reg.second = true;
+			}
 			return;
 		}
 	}
