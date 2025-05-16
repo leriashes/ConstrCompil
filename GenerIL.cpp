@@ -37,23 +37,23 @@ void GenerIL::generateDecl(Tree* node)
 	}
 }
 
-void GenerIL::generateFunctions(Tree* node)
+void GenerIL::generateFunctions()
 {
-	if (node->GetObjType() == ObjFunct && node->GetLevel() == 0)
+	for (pc = 0; pc < global->k; pc++)
 	{
-		int offs = countLocals(node->GetRight()->GetLeft(), 0);
-		offs = -(offs + (8 - offs % 8));
-		file << endl << "_TEXT SEGMENT" << endl;
-		generateLocals(node->GetRight()->GetLeft(), &offs);
-		file << node->GetAsmId() << " PROC" << endl;
-		generateCommands();
-		file << node->GetAsmId() << " ENDP" << endl;
-		file << "_TEXT ENDS" << endl;
-	}
+		if (global->code[pc].operation == procOper)
+		{
+			Tree* node = global->code[pc].operand1.node;
+			int offs = countLocals(node->GetRight()->GetLeft(), 0);
+			offs = -(offs + (8 - offs % 8));
 
-	if (node->GetLeft() != NULL)
-	{
-		generateFunctions(node->GetLeft());
+			file << endl << "_TEXT SEGMENT" << endl;
+			generateLocals(node->GetRight()->GetLeft(), &offs);
+			file << node->GetAsmId() << " PROC" << endl;
+			generateCommands();
+			file << node->GetAsmId() << " ENDP" << endl;
+			file << "_TEXT ENDS" << endl;
+		}
 	}
 }
 
@@ -77,7 +77,7 @@ void GenerIL::generateLocals(Tree* node, int* offs)
 			}
 
 			file << node->GetAsmId() << " = " << *offs << "        ; size = " << t << endl;
-			//node->SetOffset(offs);
+			node->SetOffset(*offs);
 			*offs += t;
 		}
 
@@ -87,16 +87,18 @@ void GenerIL::generateLocals(Tree* node, int* offs)
 
 void GenerIL::generateCommands()
 {
-	for (int i = 0; i < global->k; i++)
+	for (; pc < global->k; pc++)
 	{
-		Triada triada = global->code[i];
+		Triada triada = global->code[pc];
+
+		if (triada.operation == endpOper)
+		{
+			break;
+		}
 
 		if (!triada.operand1.isLink && (triada.operation >= TPlus && triada.operation <= TMinus || triada.operation >= TMult && triada.operation <= TDiv))
 		{
-			if (triada.operand1.isConst)
-				file << "mov eax, " << triada.operand1.lex << endl;
-			else
-				file << "mov eax, [" << triada.operand1.node->GetAsmId() << "]" << endl;
+			file << "mov eax, " << getOperand(triada.operand1) << endl;
 		}
 
 		if (triada.operation < boolToDouble || triada.operation == ifOper)
@@ -126,10 +128,8 @@ void GenerIL::generateCommands()
 
 			if (triada.operand2.isLink)
 				file << "ebx" << endl;
-			else if (triada.operand2.isConst)
-				file << triada.operand2.lex << endl;
 			else
-				file << "[" << triada.operand2.node->GetAsmId() << "]" << endl;
+				file << getOperand(triada.operand2) << endl;
 		}
 	}
 }
@@ -206,6 +206,39 @@ int GenerIL::countClassSize(Tree* node, int offset)
 	}
 
 	return t;
+}
+
+string GenerIL::getOperand(Operand operand)
+{
+	if (operand.isConst)
+	{
+		return operand.lex;
+	}
+	else if (operand.node->GetLevel() > 0)
+	{
+		string type;
+
+		switch (operand.node->GetTypeDecl()) {
+		case DD:
+			type = "DWORD";
+			break;
+		case DQ:
+			type = "QWORD";
+			break;
+		case DW:
+			type = "WORD";
+			break;
+		case DB:
+			type = "BYTE";
+			break;
+		}
+
+		return type + " PTR " + operand.node->GetAsmId() + "[ebp - " + to_string(abs(operand.node->GetOffset())) + "]";
+	}
+	else
+	{
+		return "[" + operand.node->GetAsmId() + "]";
+	}
 }
 
 GenerIL::GenerIL(Tree* root, GlobalData* global)
@@ -620,6 +653,8 @@ Operand GenerIL::R()
 		var->GetAsmId(&result.lex);
 	}
 
+	result.node = var;
+
 	return result;
 }
 
@@ -804,7 +839,7 @@ void GenerIL::generateCode()
 		generateDecl(root);
 		file << endl;
 
-		generateFunctions(root);
+		generateFunctions();
 
 		file.close();
 	}

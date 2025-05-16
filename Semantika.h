@@ -134,5 +134,8 @@ public:
 	string GetAsmId();
 	int GetSize();
 	void SetSize(TYPE_DECL type, int len);
+	TYPE_DECL GetTypeDecl();
+	void SetOffset(int offs);
+	int GetOffset();
 };
 

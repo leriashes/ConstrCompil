@@ -10,15 +10,17 @@ private:
 	Tree* root;
 	GlobalData* global; 
 	ofstream file;
+	int pc;
 
 	void generatePublic(Tree* node);
 	void generateDecl(Tree* node);
-	void generateFunctions(Tree* node);
+	void generateFunctions();
 	void generateLocals(Tree* node, int* offs);
 	void generateCommands();
 
 	int countLocals(Tree* node, int offs);
 	int countClassSize(Tree* node, int offset);
+	string getOperand(Operand operand);
 
 public:
 	GenerIL(Tree* root, GlobalData* global);

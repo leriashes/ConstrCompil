@@ -960,6 +960,21 @@ string Tree::GetAsmId()
 	return string(node->id_asm);
 }
 
+TYPE_DECL Tree::GetTypeDecl()
+{
+	return node->type;
+}
+
+void Tree::SetOffset(int offs)
+{
+	node->stackAddr = offs;
+}
+
+int Tree::GetOffset()
+{
+	return node->stackAddr;
+}
+
 int Tree::GetSize()
 {
 	return node->len * node->type;
