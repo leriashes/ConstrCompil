@@ -125,6 +125,7 @@ public:
 	OBJ_TYPE GetObjType();
 	int GetLevel();
 	Tree* GetLeft();
+	string GetId();
 	string GenPublicName();
 	string GenPublicDecl();
 	string GenPublicDeclClass();
